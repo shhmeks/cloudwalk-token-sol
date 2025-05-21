@@ -1,0 +1,29 @@
+{
+  "name": "cloudwalk-token-sol",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/shhmeks/cloudwalk-token-sol#readme",
+  "bugs": {
+    "url": "https://github.com/shhmeks/cloudwalk-token-sol/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shhmeks/cloudwalk-token-sol.git"
+  },
+  "license": "MIT",
+  "author": "shhmeks",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.24.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^5.3.0"
+  }
+}
