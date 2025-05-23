@@ -2,7 +2,7 @@
 
 [![Compile](https://github.com/shhmeks/cloudwalk-token-sol/workflows/Compile/badge.svg)](https://github.com/shhmeks/cloudwalk-token-sol/actions)
 [![Test](https://github.com/shhmeks/cloudwalk-token-sol/workflows/Test/badge.svg)](https://github.com/shhmeks/cloudwalk-token-sol/actions)
-[![Coverage](https://github.com/shhmeks/cloudwalk-token-sol/workflows/Coverage/badge.svg)](https://github.com/shhmeks/cloudwalk-token-sol/actions)
+[![Coverage Status](https://codecov.io/gh/shhmeks/cloudwalk-token-sol/branch/main/graph/badge.svg)](https://codecov.io/gh/shhmeks/cloudwalk-token-sol)
 
 A mintable and burnable upgradeable ERC20 token implementation with role-based access control.
 
@@ -101,10 +101,11 @@ Generate and view test coverage:
 npm run test:coverage
 ```
 
-Coverage reports are generated in the `coverage/` directory:
+### View Coverage Reports
 
-- `coverage/lcov-report/index.html` - HTML coverage report
-- `coverage/lcov.info` - LCOV format for CI/CD integration
+- **Local HTML Report**: Open `coverage/lcov-report/index.html` in your browser
+- **Codecov Dashboard**: [View detailed coverage on Codecov](https://codecov.io/gh/shhmeks/cloudwalk-token-sol)
+- **CI/CD Integration**: Coverage automatically uploaded to Codecov on each push
 
 ### Target Coverage
 
@@ -112,6 +113,8 @@ Coverage reports are generated in the `coverage/` directory:
 - **Functions**: 100%
 - **Branches**: 100%
 - **Statements**: 100%
+
+**Current Coverage**: [![codecov](https://codecov.io/gh/shhmeks/cloudwalk-token-sol/branch/main/graph/badge.svg)](https://codecov.io/gh/shhmeks/cloudwalk-token-sol)
 
 ## Contract Features
 
