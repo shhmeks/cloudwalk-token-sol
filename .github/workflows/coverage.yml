@@ -60,7 +60,6 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
           flags: unittests
           name: codecov-umbrella
@@ -72,32 +71,3 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 30
-
-      - name: Update Coverage Documentation
-        run: |
-          mkdir -p docs
-          echo "# Coverage Report" > docs/coverage.md
-          echo "Generated on: $(date)" >> docs/coverage.md
-          echo "" >> docs/coverage.md
-          if [ -f coverage/coverage-summary.json ]; then
-            echo "## Summary" >> docs/coverage.md
-            node -e "
-              const fs = require('fs');
-              const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
-              const total = coverage.total;
-              console.log('| Metric | Coverage |');
-              console.log('|--------|----------|');
-              console.log('| Lines | ' + total.lines.pct + '% |');
-              console.log('| Functions | ' + total.functions.pct + '% |');
-              console.log('| Branches | ' + total.branches.pct + '% |');
-              console.log('| Statements | ' + total.statements.pct + '% |');
-            " >> docs/coverage.md
-          fi
-
-      - name: Commit Coverage Report
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add docs/coverage.md
-          git diff --staged --quiet || git commit -m "Update coverage report [skip ci]"
-          git push
