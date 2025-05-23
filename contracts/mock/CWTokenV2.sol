@@ -3,18 +3,22 @@ pragma solidity 0.8.30;
 
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import {ICWToken} from "./interfaces/ICWToken.sol";
+import {ICWToken} from "../interfaces/ICWToken.sol";
 
 /// @title CWToken
 /// @author shhmeks
 /// @notice CWToken contract is an ERC20 token with minting and burning capabilities
 /// @dev This contract uses OpenZeppelin's ERC20 and AccessControl contracts
-contract CWToken is ERC20Upgradeable, AccessControlUpgradeable, ICWToken {
+contract CWTokenV2 is ERC20Upgradeable, AccessControlUpgradeable, ICWToken {
     /// @dev The minter role is used to mint tokens
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     /// @dev The burner role is used to burn tokens
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
+    /// @dev The version of the contract
+    /// @dev This is used to check if the contract is upgraded
+    string public version;
 
     /// @dev The modifier checks if the amount is non-zero
     /// @param amount_ The amount to check
@@ -32,6 +36,12 @@ contract CWToken is ERC20Upgradeable, AccessControlUpgradeable, ICWToken {
         __AccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
+
+    /// @notice Initializes the contract with the given version
+    /// @dev This function is used to initialize the contract after it has been upgraded
+    function initializeV2() external reinitializer(2) {
+        version = "v2";
     }
 
     /// @notice Creates a `amount_` of tokens and assigns them to `to_`, by transferring it from address(0).
