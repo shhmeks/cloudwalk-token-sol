@@ -29,9 +29,17 @@ jobs:
       - name: Run coverage
         run: npm run test:coverage
 
+      - name: Generate Coverage Report
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Coverage |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|----------|" >> $GITHUB_STEP_SUMMARY
+          npx nyc report --reporter=text-summary | grep -E "^\s*(All files|contracts)" >> $GITHUB_STEP_SUMMARY
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
           flags: unittests
           name: codecov-umbrella
@@ -43,3 +51,19 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 30
+
+      - name: Update Coverage Documentation
+        run: |
+          mkdir -p docs
+          echo "# Coverage Report" > docs/coverage.md
+          echo "Generated on: $(date)" >> docs/coverage.md
+          echo "" >> docs/coverage.md
+          npx nyc report --reporter=text >> docs/coverage.md
+
+      - name: Commit Coverage Report
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/coverage.md
+          git diff --staged --quiet || git commit -m "Update coverage report"
+          git push
