@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IFreezable} from "./IFreezable.sol";
 
 /// @title ICWToken
-/// @author shhmeks
-/// @notice Interface for CWToken contract
-/// @dev This contract is an ERC20 token with minting and burning capabilities
-interface ICWToken is IERC20 {
-    /// @dev Throws if the passed value is zero
+/// @notice Interface for the CWToken contract
+/// @dev Extends IFreezable for freezing functionality
+interface ICWToken is IFreezable {
+    /// @dev Error thrown when zero value is passed where non-zero is required
     error ZeroValue();
 
-    /// @dev Mints `amount_` tokens to `to_` address
+    /// @notice Mints tokens to the specified address
     /// @param to_ The address to mint tokens to
     /// @param amount_ The amount of tokens to mint
     function mint(address to_, uint256 amount_) external;
 
-    /// @dev Burns `amount_` tokens from `from_` address
+    /// @notice Burns tokens from the specified address
     /// @param from_ The address to burn tokens from
     /// @param amount_ The amount of tokens to burn
     function burn(address from_, uint256 amount_) external;
