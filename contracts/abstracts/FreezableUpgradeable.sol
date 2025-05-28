@@ -23,26 +23,17 @@ abstract contract FreezableUpgradeable is Initializable, AccessControlUpgradeabl
 
     /// @dev EIP-7201 storage location for Freezable functionality
     /// @dev keccak256(abi.encode(uint256(keccak256("freezable.storage.main")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 private constant FreezableStorageLocation =
-        0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcd00;
+    bytes32 private constant FREEZABLE_STORAGE_LOCATION =
+        0xfa9695980f15144951740d1e1ff56b4fa8e917742a11e7147872cbc903abce00;
 
-    /// @dev Returns the storage pointer for EIP-7201
-    function _getFreezableStorage() private pure returns (FreezableStorage storage $) {
-        assembly {
-            $.slot := FreezableStorageLocation
-        }
-    }
+    /// @dev Error thrown when zero value is passed where non-zero is required
+    error ZeroValue();
 
     /// @dev The modifier checks if the amount is non-zero
     /// @param amount_ The amount to check
-    modifier nonZeroAmount(uint256 amount_) {
-        require(amount_ > 0, "FreezableUpgradeable: amount must be non-zero");
+    modifier nonZero(uint256 amount_) {
+        if (amount_ == 0) revert ZeroValue();
         _;
-    }
-
-    /// @dev Initialize the freezable functionality
-    function __Freezable_init() internal onlyInitializing {
-        __AccessControl_init();
     }
 
     /// @notice Freezes part of user's balance
@@ -52,7 +43,7 @@ abstract contract FreezableUpgradeable is Initializable, AccessControlUpgradeabl
     function freezeUserBalance(
         address user_,
         uint256 amount_
-    ) external virtual override onlyRole(FREEZER_ROLE) nonZeroAmount(amount_) {
+    ) external virtual override onlyRole(FREEZER_ROLE) nonZero(amount_) {
         FreezableStorage storage $ = _getFreezableStorage();
         uint256 currentBalance = _getTokenBalance(user_);
         uint256 currentFrozen = $.frozenBalances[user_];
@@ -72,7 +63,7 @@ abstract contract FreezableUpgradeable is Initializable, AccessControlUpgradeabl
     function unfreezeUserBalance(
         address user_,
         uint256 amount_
-    ) external virtual override onlyRole(FREEZER_ROLE) nonZeroAmount(amount_) {
+    ) external virtual override onlyRole(FREEZER_ROLE) nonZero(amount_) {
         FreezableStorage storage $ = _getFreezableStorage();
         uint256 currentFrozen = $.frozenBalances[user_];
 
@@ -93,7 +84,7 @@ abstract contract FreezableUpgradeable is Initializable, AccessControlUpgradeabl
         address from_,
         address to_,
         uint256 amount_
-    ) external virtual override onlyRole(WITHDRAWER_ROLE) nonZeroAmount(amount_) {
+    ) external virtual override onlyRole(WITHDRAWER_ROLE) nonZero(amount_) {
         FreezableStorage storage $ = _getFreezableStorage();
         uint256 currentFrozen = $.frozenBalances[from_];
 
@@ -122,11 +113,14 @@ abstract contract FreezableUpgradeable is Initializable, AccessControlUpgradeabl
         return _getTokenBalance(user_) - $.frozenBalances[user_];
     }
 
-    /// @dev Internal function to get frozen balance (for inheritance)
-    function _getFrozenBalance(address user_) internal view returns (uint256) {
-        FreezableStorage storage $ = _getFreezableStorage();
-        return $.frozenBalances[user_];
+    /// @dev Initialize the freezable functionality
+    // solhint-disable-next-line func-name-mixedcase
+    function __Freezable_init() internal onlyInitializing {
+        __AccessControl_init();
     }
+
+    /// @dev Abstract function to transfer tokens - must be implemented by inheriting contract
+    function _transferToken(address from_, address to_, uint256 amount_) internal virtual;
 
     /// @dev Internal function to check if transfer is allowed
     function _checkFrozenBalanceTransfer(address from_, uint256 amount_) internal view {
@@ -145,6 +139,11 @@ abstract contract FreezableUpgradeable is Initializable, AccessControlUpgradeabl
     /// @dev Abstract function to get token balance - must be implemented by inheriting contract
     function _getTokenBalance(address user_) internal view virtual returns (uint256);
 
-    /// @dev Abstract function to transfer tokens - must be implemented by inheriting contract
-    function _transferToken(address from_, address to_, uint256 amount_) internal virtual;
+    /// @dev Returns the storage pointer for EIP-7201
+    function _getFreezableStorage() private pure returns (FreezableStorage storage $) {
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            $.slot := FREEZABLE_STORAGE_LOCATION
+        }
+    }
 }

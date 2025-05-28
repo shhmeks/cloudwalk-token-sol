@@ -7,9 +7,6 @@ import {IFreezable} from "./IFreezable.sol";
 /// @notice Interface for the CWToken contract
 /// @dev Extends IFreezable for freezing functionality
 interface ICWToken is IFreezable {
-    /// @dev Error thrown when zero value is passed where non-zero is required
-    error ZeroValue();
-
     /// @notice Mints tokens to the specified address
     /// @param to_ The address to mint tokens to
     /// @param amount_ The amount of tokens to mint

@@ -3,19 +3,24 @@ pragma solidity 0.8.30;
 
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {ICWToken} from "./interfaces/ICWToken.sol";
-import {FreezableUpgradeable} from "./abstracts/FreezableUpgradeable.sol";
 
-/// @title CWToken
+import {ICWToken} from "../interfaces/ICWToken.sol";
+import {FreezableUpgradeable} from "../abstracts/FreezableUpgradeable.sol";
+
+/// @title CWTokenV2
 /// @author shhmeks
-/// @notice CWToken contract is an ERC20 token with minting, burning, and freezing capabilities
+/// @notice CWTokenV2 contract is an ERC20 token with minting, burning, and freezing capabilities
 /// @dev This contract uses OpenZeppelin's ERC20 and AccessControl contracts with EIP-7201 storage
-contract CWToken is Initializable, ERC20Upgradeable, FreezableUpgradeable, ICWToken {
+contract CWTokenV2 is Initializable, ERC20Upgradeable, FreezableUpgradeable, ICWToken {
     /// @dev The minter role is used to mint tokens
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     /// @dev The burner role is used to burn tokens
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
+    /// @dev The version of the contract
+    /// @dev This is used to check if the contract is upgraded
+    string public version;
 
     /// @dev Initializes the contract with the given name and symbol
     /// @dev Grants the default admin role to the sender
@@ -26,6 +31,12 @@ contract CWToken is Initializable, ERC20Upgradeable, FreezableUpgradeable, ICWTo
         __Freezable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
+
+    /// @notice Initializes the contract with the given version
+    /// @dev This function is used to initialize the contract after it has been upgraded
+    function initializeV2() external reinitializer(2) {
+        version = "v2";
     }
 
     /// @notice Creates a `amount_` of tokens and assigns them to `to_`, by transferring it from address(0).
